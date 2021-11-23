@@ -319,7 +319,7 @@ if __name__ == "__main__":
     # TO ADD: read in scene parameters from file
 
     # Display plane
-    display_scale = 15
+    display_scale = 5
     display_width = 16 * display_scale
     display_height = 9 * display_scale
     fov_scale = 1 # fov inversely proportional to fov_scale
@@ -334,9 +334,9 @@ if __name__ == "__main__":
     
     small_radius = 0.2
     large_radius = 20
-    spheres = [Sphere([j*fov_scale/10, abs(j/2)/10, -1-(abs(j)/10)], small_radius, [.4, 0, .4], .75) for j in range(-30, 35, 5)]
+    spheres = [Sphere([j*fov_scale/10, abs(j/2)/10, -1-(abs(j)/10)], small_radius, [.1, 0, .1], 0, .5, .5, 1.5) for j in range(-30, 35, 5)]
     spheres.append(Sphere([0, -large_radius+(.5*small_radius), -4.5], large_radius, [.2, .35, .3], 0.4))
-    planes = [Plane([0, -small_radius, 0], [0, 1, 0], [.1, .35, .6], .4)]
+    planes = [Plane([0, -small_radius, 0], [0, 1, 0], [.01, .05, .1], .5, .5, .5, 1.3)]
     lights = [Light([-.25, small_radius/4, -.5], [1, 1, 1]), Light([1.5, 2 + small_radius, -2], [.8, .8, .8])]
     k_ambient = 0.1
     background_color = np.array([0.1, 0.1, 0.1])
@@ -356,7 +356,7 @@ if __name__ == "__main__":
             if hit_element != 0:# hit_element = 0 means no intersection found
                 c_ambient = ambient_contrib(hit_element)
                 c_diffuse = diffuse_contrib(hit_point, hit_element)
-                c_fresnel = np.array([0.0, 0.0, 0.0]) #fresnel_contrib(t, hit_point, pixel_ray.direction, hit_element)
+                c_fresnel = fresnel_contrib(t, hit_point, pixel_ray.direction, hit_element, 5)
                 color_xy = c_ambient + c_diffuse + c_fresnel
             else:
                 color_xy = background_color
