@@ -1,3 +1,11 @@
+### Ray tracer: example images
+
+#### Ambient light only
+![](images/example_ambient.png)
+#### Diffusely scattered + ambient light
+![](images/example_diffuse.png)
+#### Shadows + diffusely scattered + ambient light
+![](images/example_shadowsdiffuse.png)
 ### Python raytracer
 - based on [Whitted](https://www.cs.drexel.edu/~david/Classes/Papers/p343-whitted.pdf) (recursive Fresnel-governed reflection/refraction)
 - !not! performance optimized
