@@ -28,7 +28,7 @@ The scene consists of object elements (spheres, planes) and lights. Scene elemen
                     |\              _____               ====
                     | \            /     \   Scene      ====
                     |  \          /       \     Objects ====
-Observer            |   \        (         )            ====
+      Observer      |   \        (         )            ====
        \            |    \        \       /     ______  ====
        O) - - - - - |- >  \ - - - *\     /     (      ) ====
        /             \    |          ---        (    )  ====
