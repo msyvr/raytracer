@@ -1,12 +1,7 @@
 ### Python ray tracer: example image series
 Sequential images include optical effects from ambient light only to shadows and indirect lighting.
 
-#### Ambient light only
-![](images/example_ambient.png)
-#### Diffusely scattered + ambient light
-![](images/example_diffuse.png)
-#### Shadows + diffusely scattered + ambient light
-![](images/example_shadowsdiffuse.png)
+<img src="images/example_ambient.png" alt="spheres with ambient light" width="480"> <img src="images/example_diffuse.png" alt="spheres with diffusely scattered localized lights + ambient light" width="480"> <img src="images/example_shadowsdiffuse.png" alt="spheres with diffusely scattered localized lights/shadows + ambient light" width="480">
 
 ### This code
 - an exercise, not intended for production use
@@ -86,7 +81,7 @@ Elements are represented by classes; class instances are generated based on geom
     - display default is 16:9 * display_scale
     - run time scales with number of pixels, so with display_scale**2 
   - WARNING: ray tracing is computationally expensive and, in its current state, this code is not suitable for real-time frame generation
-    - Nvidia has some great tech and resources for real time image generation incorporating ray tracing: [Intro to NVIDIA RTX and DirectX ray tracing tech] (https://developer.nvidia.com/blog/introduction-nvidia-rtx-directx-ray-tracing/)
+    - Nvidia has some great tech and resources for real time image generation incorporating ray tracing: [Intro to NVIDIA RTX and DirectX ray tracing tech](https://developer.nvidia.com/blog/introduction-nvidia-rtx-directx-ray-tracing/)
 
 License: MIT
 
