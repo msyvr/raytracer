@@ -1,72 +1,88 @@
-Ray tracer
-in python
-should be in rust 
-but I'm working on python atm
-:)
+### Python ray tracer: example image series
+Sequential images include optical effects from ambient light only to shadows and indirect lighting.
 
-# Scene rendered:
-# Pixel values represent color as (red, green, blue) with each in 0..255
-# The number and arrangement of pixels is: 
-# n_vertical_pixels * n_horizontal_pixels
+<img src="images/example_ambient.png" alt="spheres with ambient light" width="480"> <img src="images/example_diffuse.png" alt="spheres with diffusely scattered localized lights + ambient light" width="480"> <img src="images/example_shadowsdiffuse.png" alt="spheres with diffusely scattered localized lights/shadows + ambient light" width="480">
 
-# The output file format is .ppm, specified as:
-# P3 (width: int) (height: int) (r) (g) (b) (r) (g) (b) ... (r) (g) (b)\n
-# (nb: there's a newline after the last value and whitespace or newline separates elements)
-# r, g, b vals are often 0..255 and are limited to 0..65535
+### This code
+- an exercise, not intended for production use
+- !not! performance optimized: ray tracing is computationally expensive and this implementation is slow
+  - performance optimization roadmap and status: details on the project page
 
-# Convention: horizontal = x axis, vertical = y axis, z axis is normal to the display plane
+References: 
+- [Computer Graphics from Scratch - Ray Tracing Overview (scratchapixel)](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview)
+- [An improved illumination model for shaded display (Whitted)](https://www.cs.drexel.edu/~david/Classes/Papers/p343-whitted.pdf)
 
-# To have the pixels ordered as [(r1, c1), (r1, c2), ...], the nested loop for computing pixel values is structured as:
-# outer loop --> vertical (y)
-# inner loop --> horizontal (x)
-
-Render a scene consisting of light sources + objects/surfaces
-
-Objects, surfaces can have: color, reflectance, index of refraction properties 
-
-Rendering consists of assignment of a color value to each display pixel.
-
-The core concept is that only those 'rays' passing through the display plane to reach the observer contribute to the rendered scene, so those are the only ones which need to be computed. The display plane pixel that the ray passes through is assigned the 'value' of the scene point that that specific pixel-ray intersects.
-
-(NB: light consists of photons, not rays, and the light effectively emitted from the surface toward the observer is generally an approximation, taking into account a limited set of factors in determining the light that's incident at the nearest-surface point - which is used to yield the pixel value.)
-
-                    Indirect Light
+#### Ray tracing basics
+- This code renders a 3D scene volume to a 2D display using ray tracing
+  - each 2D display position (pixel) is mapped* to a point in the 3D volume
+  - 'reverse' ray-trace from the hit point, computing optical interactions at intersections, then integrate over these to set the associated pixel's color value
+  - consider ambient light, diffuse surface scattering, occlusion/shadows, and indirect light from directional contributions (reflection and refraction, computed recursively)
+```
+                    Ambient Light
                     |||||||||||||||||||||||||||||||||||||||
                     |||||||||||||||||||||||||||||||||||||||
                                                         ====
                 Display Plane                           ====
                     |\              _____               ====
                     | \            /     \   Scene      ====
-                    |  \          /       \     Objects ====
-Observer            |   \        (         )            ====
-       \            |    \        \       /     ______  ====
-       O) - - - - - |- >  \ - - - *\     /     (      ) ====
-       /             \    |          ---        (    )  ====
+                    |  \          /       \   Objects   ====
+        Camera      |   \        (         )            ====
+        |           |    \        \       /     ______  ====
+        O)- - - - - |- >  \ - - - *\     /     (      ) ====
+        |            \    |          ---        (    )  ====
                       \   |                      (  )   ====
                        \  |                       --    ====
                         \ |                             ====
                          \|                             ====
-                                ||||||||||||||||||||||||||
-                                ||||||||||||||||||||||||||
-                                Indirect light
+                                      ***   Scene
+                                      ***   Light
+```
+* 3D -> 2D mapping:
+  - parametrize the line ('primary ray') between a virtual camera/eye** and the scene pixel
+  - compute the nearest intersection point between the line and scene elements (i.e., find the nearest 'hit')
+  - ** the camera and scene are on opposite sides of the display plane
 
-Notes on the output file format: PPM
-from http://netpbm.sourceforge.net/doc/ppm.html:
+#### Display plane
+- The number and arrangement of display plane pixels is:
+  - n_vertical_pixels * n_horizontal_pixels
+- Pixel values represent color as [red, green, blue]. 
 
-A PPM file consists of a sequence of one or more PPM images. There are no data, delimiters, or padding before, after, or between images.
+#### Scene elements
+- Currently:
+  - spheres: position, radius, color
+  - planes: point on plane, normal, color
+  - lights: position, color
+- Elements' optical properties include:
+  - Lambertian coefficient: diffuse surface scattering
+  - Fresnel coefficients: surface reflectivity, index of refraction
 
-Each PPM image consists of the following:
+#### Input
+Elements are represented by classes; class instances are generated based on geometric, color, and material parameters.
 
-    A "magic number" for identifying the file type. A ppm image's magic number is the two characters "P6".
-    Whitespace (blanks, TABs, CRs, LFs).
-    A width, formatted as ASCII characters in decimal.
-    Whitespace.
-    A height, again in ASCII decimal.
-    Whitespace.
-    The maximum color value (Maxval), again in ASCII decimal. Must be less than 65536 and more than zero.
-    A single whitespace character (usually a newline).
-    A raster of Height rows, in order from top to bottom. Each row consists of Width pixels, in order from left to right. Each pixel is a triplet of red, green, and blue samples, in that order. Each sample is represented in pure binary by either 1 or 2 bytes. If the Maxval is less than 256, it is 1 byte. Otherwise, it is 2 bytes. The most significant byte is first.
+#### Output: image file
+- With matplotlib, a .png file is generated via imsave().
+- If no matplotlib, can write to .ppm file, [formatted as](http://netpbm.sourceforge.net/doc/ppm.html):
+  - P3 (width: int) (height: int) 'r' 'g' 'b' 'r' 'g' 'b'  ... 'r' 'g' 'b' \n
+    - for .ppm files, 'r' 'g' 'b'  are each in (usually) range(256) (and maximally limited to range(2^16))
 
-    A row of an image is horizontal. A column is vertical. The pixels in the image are square and contiguous.
+#### Details: Scene elements + optical interactions
+- The scene consists of object elements (spheres, planes) and lights. Scene elements have attributes such as color, surface finish, and refractive index.
+- NB: light consists of photons, not rays; here, the light effectively 'emitted' from a scene element surface point toward the observer is an approximation, both due to the ray approximation of light and to the homogeneous and approximate optical properties assigned to scene elements.
 
-    In the raster, the sample values are "nonlinear." They are proportional to the intensity of the ITU-R Recommendation BT.709 red, green, and blue in the pixel, adjusted by the BT.709 gamma transfer function. (That transfer function specifies a gamma number of 2.2 and has a linear section for small intensities). A value of Maxval for all three samples represents CIE D65 white and the most intense color in the color universe of which the image is part (the color universe is all the colors in all images to which this image might be compared). 
+#### Use
+
+- Modules:
+  - numpy
+  - matplotlib
+  - time (optional)
+
+- Run time:
+  - !!NB!! display_scale parameter adjustment will determine execution time:
+    - display default is 16:9 * display_scale
+    - run time scales with number of pixels, so with display_scale**2 
+  - WARNING: ray tracing is computationally expensive and, in its current state, this code is not suitable for real-time frame generation
+    - Nvidia has some great tech and resources for real time image generation incorporating ray tracing: [Intro to NVIDIA RTX and DirectX ray tracing tech](https://developer.nvidia.com/blog/introduction-nvidia-rtx-directx-ray-tracing/)
+
+License: MIT
+
+Language: Python (built on python 3.9.7)
