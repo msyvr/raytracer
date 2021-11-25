@@ -244,7 +244,7 @@ def shift_ray_start(start_point, normal, delta = 0):
 # ambient light: constant scaling factor k_ambient
 
 def ambient_contrib(hit_element):
-    return k_ambient * hit_element.diffuse * hit_element.color
+    return k_ambient * hit_element.color
 
 # diffusely scattered light contributions from non-occluded lights
 
@@ -333,12 +333,12 @@ if __name__ == "__main__":
     # units (!): display coords are scaled to x in [-1, 1] with aspect ratio maintained (y scaled by nrows/ncolumns); to maintain FOV, z scales with display width (this choice assumes display width >= display height so will have a greater impact on potential edge distortions)
     
     small_radius = 0.2
-    large_radius = 15
-    spheres = [Sphere([j*fov_scale/10, abs(j/2)/10, -1-(abs(j)/10)], small_radius, [.4, 0, .4], 1, .5, .5, 1.5) for j in range(-30, 35, 5)]
-    spheres.append(Sphere([0, -large_radius-(1*small_radius), -2.5], large_radius, [.2, .35, .3], 1, 1, 0, 1))
-    planes = [Plane([0, -1.5*small_radius, 0], [0, 1, 0], [.1, .35, .6], 1, .5, .5, 1.3)]
+    large_radius = 20
+    spheres = [Sphere([j*fov_scale/10, abs(j/2)/10, -1-(abs(j)/10)], small_radius, [.1, 0, .1], 0, .5, .5, 1.5) for j in range(-30, 35, 5)]
+    spheres.append(Sphere([0, -large_radius+(.5*small_radius), -4.5], large_radius, [.2, .35, .3], 0.4))
+    planes = [Plane([0, -small_radius, 0], [0, 1, 0], [.01, .05, .1], .5, .5, .5, 1.3)]
     lights = [Light([-.25, small_radius/4, -.5], [1, 1, 1]), Light([1.5, 2 + small_radius, -2], [.8, .8, .8])]
-    k_ambient = 0.5
+    k_ambient = 0.1
     background_color = np.array([0.1, 0.1, 0.1])
     scene = spheres + planes
 
@@ -355,9 +355,9 @@ if __name__ == "__main__":
             t, hit_point, hit_element = find_nearest(pixel_ray, scene + lights)
             if hit_element != 0:# hit_element = 0 means no intersection found
                 c_ambient = ambient_contrib(hit_element)
-                #c_diffuse = diffuse_contrib(hit_point, hit_element)
-                #c_fresnel = fresnel_contrib(t, hit_point, pixel_ray.direction, hit_element, 5)
-                color_xy = c_ambient # + c_diffuse + c_fresnel
+                c_diffuse = diffuse_contrib(hit_point, hit_element)
+                c_fresnel = fresnel_contrib(t, hit_point, pixel_ray.direction, hit_element, 5)
+                color_xy = c_ambient + c_diffuse + c_fresnel
             else:
                 color_xy = background_color
             img[j, i, :] = color_xy
