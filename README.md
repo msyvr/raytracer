@@ -36,10 +36,10 @@ References:
 - A 3D scene volume is rendered to a 2D display based on physics-based in-scene optical interactions
   - map* each 2D display position (pixel) to the nearest in-scene hit point
   - starting from the hit point, recursively ray-trace reflection and refraction rays that contribute to the hit point color value:
-    - using the Fresnel equations, compute reflected and refracted rays from the 'hit' point
+    - using the Fresnel equations, compute reflected and refracted rays from the hit point
     - follow these two rays, recursively generating new reflection and refraction rays at each subsequent scene element intersection, until a ray intersects a light source (or the computation times out)
-  - integrate over all light contributions to the initial nearest hit point to set the associated pixel's color value
-    - ambient, diffuse surface scattering, occlusion/shadows, indirect light (prior reflection and refraction contributions, computed recursively)
+  - integrate over contributions to the initial nearest hit point to set the associated pixel's color value
+    - ambient + diffuse surface scattering (considering occlusion/shadows) + indirect light (prior reflection and refraction contributions, computed recursively)
 ```
                     Ambient Light
                     |||||||||||||||||||||||||||||||||||||||
@@ -61,9 +61,8 @@ References:
                                       ***   Light
 ```
 * map 3D -> 2D:
-  - parametrize ray as a line between a virtual camera/eye** and the scene pixel: ray = ray.origin + t * ray.direction
+  - parametrize ray as a line between a virtual camera/eye (at an observer position, in front of the display) and the scene pixel: ray = ray.origin + t * ray.direction
   - compute the nearest intersection between the line and all scene elements (i.e., find the nearest 'hit')
-  - ** the camera and scene are on opposite sides of the display plane
 
 #### Display plane
 - The number and arrangement of display plane pixels is:
