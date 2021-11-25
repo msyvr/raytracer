@@ -61,8 +61,9 @@ References:
                                       ***   Light
 ```
 * map 3D -> 2D:
-  - parametrize ray as a line between a virtual camera/eye (at an observer position, in front of the display) and the scene pixel: ray = ray.origin + t * ray.direction
-  - compute the nearest intersection between the line and all scene elements (i.e., find the nearest 'hit')
+  - parametrize ray as a line between a virtual camera/eye (at an observer position, in front of the display) and the scene pixel: 
+    - Point-on-ray-trajectory = ray.origin + t * ray.direction
+  - compute the nearest intersection between the line/ray and all scene elements (i.e., find the nearest 'hit')
 
 #### Display plane
 - The number and arrangement of display plane pixels is:
