@@ -34,7 +34,7 @@ References:
 
 #### Ray tracing basics
 - A 3D scene volume is rendered to a 2D display based on physics-based in-scene optical interactions
-  - map* each 2D display position (pixel) to a nearest in-scene hit point of the extended ray passing through the pixel from the camera
+  - map* each 2D display position (pixel) to the nearest in-scene hit point
   - starting from the hit point, recursively ray-trace reflection and refraction rays that contribute to the hit point color value:
     - using the Fresnel equations, compute reflected and refracted rays from the 'hit' point
     - follow these two rays, recursively generating new reflection and refraction rays at each subsequent scene element intersection, until a ray intersects a light source (or the computation times out)
