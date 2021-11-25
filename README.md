@@ -1,4 +1,5 @@
-### Ray tracer: example image series - sequential images include optical effects from ambient light only to shadows and indirect lighting
+### Ray tracer: example image series
+Sequential images include optical effects from ambient light only to shadows and indirect lighting.
 
 #### Ambient light only
 ![](images/example_ambient.png)
