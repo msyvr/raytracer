@@ -1,22 +1,45 @@
 ### Python ray tracer: example image series
+
 Sequential images include optical effects from ambient light only to shadows and indirect lighting.
 
 <img src="images/example_ambient.png" alt="spheres with ambient light" width="480"> <img src="images/example_diffuse.png" alt="spheres with diffusely scattered localized lights + ambient light" width="480"> <img src="images/example_shadowsdiffuse.png" alt="spheres with diffusely scattered localized lights/shadows + ambient light" width="480">
 
 ### This code
 - an exercise, not intended for production use
-- !not! performance optimized: ray tracing is computationally expensive and this implementation is slow
-  - performance optimization roadmap and status: details on the project page
+  - !not! performance optimized: ray tracing is computationally expensive and this implementation is slow
+- core algorithm:
+```    
+    for j in range(display_height):
+        yd = yd_from_j(j, display_height, display_width)
+        for i in range(display_width):
+            xd = xd_from_i(i, display_width)
+            pixel_ray = Ray(c.center, [xd, yd, zd])
+            t, hit_point, hit_element = find_nearest(pixel_ray, scene + lights)
+            if hit_element != 0:
+                c_ambient = ambient_contrib(hit_element)
+                c_diffuse = diffuse_contrib(hit_point, hit_element)
+                c_fresnel = fresnel_contrib(t, hit_point, pixel_ray.direction, hit_element, recursion_depth)
+                color_xy = c_ambient + c_diffuse + c_fresnel
+            else:
+                color_xy = background_color
+            img[j, i, :] = color_xy
+            colors = colors + ' ' + str(color_xy)
+```
+- diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are computed based on the physics of light transport
+  - NB: light information is carried by photons and the ray approximation in ray tracing is a design choice, trading off render precision for reduced computational expense
 
 References: 
-- [Computer Graphics from Scratch - Ray Tracing Overview (scratchapixel)](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview)
 - [An improved illumination model for shaded display (Whitted)](https://www.cs.drexel.edu/~david/Classes/Papers/p343-whitted.pdf)
+- [Computer Graphics from Scratch - Ray Tracing Overview (scratchapixel)](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview)
 
 #### Ray tracing basics
-- This code renders a 3D scene volume to a 2D display using ray tracing
-  - each 2D display position (pixel) is mapped* to a point in the 3D volume
-  - 'reverse' ray-trace from the hit point, computing optical interactions at intersections, then integrate over these to set the associated pixel's color value
-  - consider ambient light, diffuse surface scattering, occlusion/shadows, and indirect light from directional contributions (reflection and refraction, computed recursively)
+- A 3D scene volume is rendered to a 2D display based on physics-based in-scene optical interactions
+  - map* each 2D display position (pixel) to a nearest in-scene hit point of the extended ray passing through the pixel from the camera
+  - starting from the hit point, recursively ray-trace reflection and refraction rays that contribute to the hit point color value:
+    - using the Fresnel equations, compute reflected and refracted rays from the 'hit' point
+    - follow these two rays, recursively generating new reflection and refraction rays at each subsequent scene element intersection, until a ray intersects a light source (or the computation times out)
+  - integrate over all light contributions to the initial nearest hit point to set the associated pixel's color value
+    - ambient, diffuse surface scattering, occlusion/shadows, indirect light (prior reflection and refraction contributions, computed recursively)
 ```
                     Ambient Light
                     |||||||||||||||||||||||||||||||||||||||
@@ -37,9 +60,9 @@ References:
                                       ***   Scene
                                       ***   Light
 ```
-* 3D -> 2D mapping:
-  - parametrize the line ('primary ray') between a virtual camera/eye** and the scene pixel
-  - compute the nearest intersection point between the line and scene elements (i.e., find the nearest 'hit')
+* map 3D -> 2D:
+  - parametrize ray as a line between a virtual camera/eye** and the scene pixel: ray = ray.origin + t * ray.direction
+  - compute the nearest intersection between the line and all scene elements (i.e., find the nearest 'hit')
   - ** the camera and scene are on opposite sides of the display plane
 
 #### Display plane
@@ -48,16 +71,13 @@ References:
 - Pixel values represent color as [red, green, blue]. 
 
 #### Scene elements
-- Currently:
-  - spheres: position, radius, color
-  - planes: point on plane, normal, color
-  - lights: position, color
-- Elements' optical properties include:
-  - Lambertian coefficient: diffuse surface scattering
-  - Fresnel coefficients: surface reflectivity, index of refraction
+- spheres
+- planes
+- lights
 
 #### Input
-Elements are represented by classes; class instances are generated based on geometric, color, and material parameters.
+- Scene elements represented by classes
+- Generate class instances, specifying attributes: e.g., position, surface normal, color, Fresnel coefficients (reflectivity, index of refraction)
 
 #### Output: image file
 - With matplotlib, a .png file is generated via imsave().
@@ -65,17 +85,14 @@ Elements are represented by classes; class instances are generated based on geom
   - P3 (width: int) (height: int) 'r' 'g' 'b' 'r' 'g' 'b'  ... 'r' 'g' 'b' \n
     - for .ppm files, 'r' 'g' 'b'  are each in (usually) range(256) (and maximally limited to range(2^16))
 
-#### Details: Scene elements + optical interactions
-- The scene consists of object elements (spheres, planes) and lights. Scene elements have attributes such as color, surface finish, and refractive index.
-- NB: light consists of photons, not rays; here, the light effectively 'emitted' from a scene element surface point toward the observer is an approximation, both due to the ray approximation of light and to the homogeneous and approximate optical properties assigned to scene elements.
-
-#### Use
-
+#### Dependencies
 - Modules:
   - numpy
   - matplotlib
   - time (optional)
 
+### Use
+- download main.py -> command line: $ python3 main.py
 - Run time:
   - !!NB!! display_scale parameter adjustment will determine execution time:
     - display default is 16:9 * display_scale
