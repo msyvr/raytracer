@@ -301,15 +301,6 @@ def fresnel_contrib(t, start_point, direction, start_element, depth = 2):
         k_refl = 0.5 # FUDGE FACTOR - need to compute Fresnel reflection coefficient
         k_refr = 0.5 # ^^^DITTO
         return start_element.color * ((start_element.refl*fresnel_contrib(t_refl, refl_next_hit_point, refl_next_direction, refl_next_hit_element, depth)) + (start_element.refr*fresnel_contrib(t_refr, refr_next_hit_point, refr_next_direction, refr_next_hit_element, depth)))
-        
-
-# indirect but directional (Fresnel-governed)
-# compute the surface normal at the hit point
-# apply Fresnel ratios to 
-# indirect: recursively cast ray from previous intersection, find nearest intersection until base cases:
-    # 1) count recursions: if recursive depth exceeds some number, assign 'emitter' the color of the object illuminated ambiently (**if not in shadow - compare to stored map of shadow coords computed in a prior step**);
-    # 2) if emitter/light source, recursively 'fill in' values for color based on that emitter/light source
-# the recursion will then compute the traced ray color value back to the original hit point; the result will be an additive contribution to the pixel value
 
 
 #################### main
