@@ -30,6 +30,8 @@ This sequence of images shows the evolution of a ray traced image with added opt
 References: 
 - [An improved illumination model for shaded display (Whitted)](https://www.cs.drexel.edu/~david/Classes/Papers/p343-whitted.pdf)
 - [Computer Graphics from Scratch - Ray Tracing Overview (scratchapixel)](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview)
+- Nvidia has some great tech and resources for real time image generation incorporating ray tracing: [Intro to NVIDIA RTX and DirectX ray tracing tech](https://developer.nvidia.com/blog/introduction-nvidia-rtx-directx-ray-tracing/)
+- [Radiance Caching for Real-Time Global Illumination](https://youtu.be/2GYXuM10riw): Daniel Wright (Engineering Fellow in graphics at Epic Games) at SIGGRAPH 2021
 
 #### Ray tracing basics
 - A 3D scene volume is rendered to a 2D display based on physics-based in-scene optical interactions
@@ -104,7 +106,6 @@ References:
       Display: 800 x 450
       Time to compute: 536.0476911067963 s
       ```
-    - Nvidia has some great tech and resources for real time image generation incorporating ray tracing: [Intro to NVIDIA RTX and DirectX ray tracing tech](https://developer.nvidia.com/blog/introduction-nvidia-rtx-directx-ray-tracing/)
 
 License: MIT
 
