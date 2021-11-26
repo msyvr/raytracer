@@ -92,7 +92,7 @@ References:
   - time (optional)
 
 ### Use
-- download main.py -> command line: $ python3 main.py
+- $ python3 main.py
 - output/image file: raytray.png
 - run time:
   - !!NB!! display_scale parameter adjustment will determine execution time:
