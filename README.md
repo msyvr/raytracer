@@ -1,6 +1,6 @@
 ### Python ray tracer: example image series
 
-Sequential images include optical effects from ambient light only to shadows and indirect lighting.
+This sequence of images shows the evolution of a ray traced image with added optical contributions (ambient, diffuse surface scattering, shadows/occlusion, recursively traced reflection/refraction).
 
 <img src="images/example_ambient.png" alt="spheres with ambient light" width="480"> <img src="images/example_diffuse.png" alt="spheres with diffusely scattered localized lights + ambient light" width="480"> <img src="images/example_shadowsdiffuse.png" alt="spheres with diffusely scattered localized lights/shadows + ambient light" width="480">
 
