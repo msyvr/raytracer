@@ -24,7 +24,7 @@ Sequential images include optical effects from ambient light only to shadows and
                 color_xy = background_color
             img[j, i, :] = color_xy
 ```
-- diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are computed based on the physics of light transport
+- diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are based on physics
   - NB: light information is carried by photons and the ray approximation in ray tracing is a design choice, trading off render precision for reduced computational expense
 
 References: 
