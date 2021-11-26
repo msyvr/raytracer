@@ -86,18 +86,25 @@ References:
     - for .ppm files, 'r' 'g' 'b'  are each in (usually) range(256) (and maximally limited to range(2^16))
 
 #### Dependencies
-- Modules:
+- Python modules (all imported in main.py):
   - numpy
   - matplotlib
   - time (optional)
 
 ### Use
 - download main.py -> command line: $ python3 main.py
-- Run time:
+- output/image file: raytray.png
+- run time:
   - !!NB!! display_scale parameter adjustment will determine execution time:
     - display default is 16:9 * display_scale
     - run time scales with number of pixels, so with display_scale**2 
   - WARNING: ray tracing is computationally expensive and, in its current state, this code is not suitable for real-time frame generation
+    - example images generated with display_scale = 50 on a 2015 MacBookPro running on Mojave 10.14.6 with a 2.9 GHz Intel Core i5 processor:
+      ```
+      Image saved as raytray_image.png
+      Display: 800 x 450
+      Time to compute: 536.0476911067963 s
+      ```
     - Nvidia has some great tech and resources for real time image generation incorporating ray tracing: [Intro to NVIDIA RTX and DirectX ray tracing tech](https://developer.nvidia.com/blog/introduction-nvidia-rtx-directx-ray-tracing/)
 
 License: MIT
