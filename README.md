@@ -1,6 +1,6 @@
 ### Python ray tracer: example image series
 
-Sequential images include optical effects from ambient light only to shadows and indirect lighting.
+This sequence of images shows the evolution of a ray traced image with added optical contributions (ambient, diffuse surface scattering, shadows/occlusion, recursively traced reflection/refraction).
 
 <img src="images/example_ambient.png" alt="spheres with ambient light" width="480"> <img src="images/example_diffuse.png" alt="spheres with diffusely scattered localized lights + ambient light" width="480"> <img src="images/example_shadowsdiffuse.png" alt="spheres with diffusely scattered localized lights/shadows + ambient light" width="480">
 
@@ -23,14 +23,15 @@ Sequential images include optical effects from ambient light only to shadows and
             else:
                 color_xy = background_color
             img[j, i, :] = color_xy
-            colors = colors + ' ' + str(color_xy)
 ```
-- diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are computed based on the physics of light transport
+- diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are based on physics
   - NB: light information is carried by photons and the ray approximation in ray tracing is a design choice, trading off render precision for reduced computational expense
 
 References: 
 - [An improved illumination model for shaded display (Whitted)](https://www.cs.drexel.edu/~david/Classes/Papers/p343-whitted.pdf)
 - [Computer Graphics from Scratch - Ray Tracing Overview (scratchapixel)](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview)
+- Nvidia has some great tech and resources for real time image generation incorporating ray tracing: [Intro to NVIDIA RTX and DirectX ray tracing tech](https://developer.nvidia.com/blog/introduction-nvidia-rtx-directx-ray-tracing/)
+- [Radiance Caching for Real-Time Global Illumination](https://youtu.be/2GYXuM10riw): Daniel Wright (Engineering Fellow in graphics at Epic Games) at SIGGRAPH 2021
 
 #### Ray tracing basics
 - A 3D scene volume is rendered to a 2D display based on physics-based in-scene optical interactions
@@ -105,7 +106,6 @@ References:
       Display: 800 x 450
       Time to compute: 536.0476911067963 s
       ```
-    - Nvidia has some great tech and resources for real time image generation incorporating ray tracing: [Intro to NVIDIA RTX and DirectX ray tracing tech](https://developer.nvidia.com/blog/introduction-nvidia-rtx-directx-ray-tracing/)
 
 License: MIT
 
