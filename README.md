@@ -1,3 +1,27 @@
+### Python ray tracing engine
+- render 3D scenes: geometric elements (spheres, planes) with specific optical properties, plus point sources of light
+- scene elements: generated as class instances
+- for each output image pixel, in-scene optical interactions are computed to determine the color of the pixel's incoming light ray
+  - this process is computationally intensive
+  - this implementation isn't performance optimized via parallelization, bounding volumes, etc.
+  - run time depends on image size and recursion depth (for indirect reflection and refraction components contributing to the incoming ray) 
+- pixel color value computed as: ambient + diffusely surface-scattered (occluded 'shadow' areas omitted) + indirect reflection and refraction (computed recursively, to light source or depth-limit/timeout) 
+
+### Use
+- $ python3 main.py
+- output/image file: raytray.png
+- run time:
+  - !!NB!! display_scale and recursion depth parameters will determine execution time:
+    - display default is 16:9 * display_scale
+    - run time scales with number of pixels: display_scale**2 
+  - WARNING: ray tracing is computationally expensive and, in its current state, this code is not suitable for real-time frame generation
+    - example images generated with recursion depth = 0 (no Fresnel components) and display_scale = 50 on a 2015 MacBookPro running on Mojave 10.14.6 with a 2.9 GHz Intel Core i5 processor:
+      ```
+      Image saved as raytray_image.png
+      Display: 800 x 450
+      Time to compute: 536.0476911067963 s
+      ```
+
 ### Python ray tracer: example image series
 
 This sequence of images shows the evolution of a ray traced image with added optical contributions (ambient, diffuse surface scattering, shadows/occlusion, recursively traced reflection/refraction).
@@ -24,7 +48,7 @@ This sequence of images shows the evolution of a ray traced image with added opt
                 color_xy = background_color
             img[j, i, :] = color_xy
 ```
-- diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are based on physics
+- diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are physics-based
   - NB: light information is carried by photons and the ray approximation in ray tracing is a design choice, trading off render precision for reduced computational expense
 
 References: 
@@ -91,21 +115,6 @@ References:
   - numpy
   - matplotlib
   - time (optional)
-
-### Use
-- $ python3 main.py
-- output/image file: raytray.png
-- run time:
-  - !!NB!! display_scale parameter adjustment will determine execution time:
-    - display default is 16:9 * display_scale
-    - run time scales with number of pixels, so with display_scale**2 
-  - WARNING: ray tracing is computationally expensive and, in its current state, this code is not suitable for real-time frame generation
-    - example images generated with display_scale = 50 on a 2015 MacBookPro running on Mojave 10.14.6 with a 2.9 GHz Intel Core i5 processor:
-      ```
-      Image saved as raytray_image.png
-      Display: 800 x 450
-      Time to compute: 536.0476911067963 s
-      ```
 
 License: MIT
 
