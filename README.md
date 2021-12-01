@@ -1,18 +1,16 @@
 ### Python ray tracing engine
-- render 3D scenes: geometric elements (spheres, planes) with specific optical properties, plus point sources of light
-- scene elements: generated as class instances
-- for each output image pixel, in-scene optical interactions are computed to determine the color of the pixel's incoming light ray
-  - this process is computationally intensive
-  - this implementation isn't performance optimized via parallelization, bounding volumes, etc.
-  - run time depends on image size and recursion depth (for indirect reflection and refraction components contributing to the incoming ray) 
-- pixel color value computed as: ambient + diffusely surface-scattered (occluded 'shadow' areas omitted) + indirect reflection and refraction (computed recursively, to light source or depth-limit/timeout) 
+- Render a 3D scene by simulating its illumination
+- For each output image pixel, in-scene optical interactions are computed to determine the color of the pixel's incoming light ray
+  - !computationally intensive
+  - this implementation is *not* performance optimized via parallelization, bounding volumes, etc.
+  - run time depends on image size and recursion depth
 
 ### Use
 - $ python3 main.py
-- output/image file: raytray.png
-- run time:
-  - !!NB!! display_scale and recursion depth parameters will determine execution time:
-    - display default is 16:9 * display_scale
+- Output/image file: raytray.png
+- Run time:
+  - scales with 'display_scale' and recursion 'depth' parameters:
+    - display size (default): 16:9 * display_scale
     - run time scales with number of pixels: display_scale**2 
   - WARNING: ray tracing is computationally expensive and, in its current state, this code is not suitable for real-time frame generation
     - example images generated with recursion depth = 0 (no Fresnel components) and display_scale = 50 on a 2015 MacBookPro running on Mojave 10.14.6 with a 2.9 GHz Intel Core i5 processor:
@@ -29,9 +27,9 @@ This sequence of images shows the evolution of a ray traced image with added opt
 <img src="images/example_ambient.png" alt="spheres with ambient light" width="480"> <img src="images/example_diffuse.png" alt="spheres with diffusely scattered localized lights + ambient light" width="480"> <img src="images/example_shadowsdiffuse.png" alt="spheres with diffusely scattered localized lights/shadows + ambient light" width="480">
 
 ### This code
-- an exercise, not intended for production use
+- Not intended for production use
   - !not! performance optimized: ray tracing is computationally expensive and this implementation is slow
-- core algorithm:
+- Core logic:
 ```    
     for j in range(display_height):
         yd = yd_from_j(j, display_height, display_width)
@@ -48,7 +46,7 @@ This sequence of images shows the evolution of a ray traced image with added opt
                 color_xy = background_color
             img[j, i, :] = color_xy
 ```
-- diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are physics-based
+- Diffuse surface scattered (Lambertian) and indirect/recursive (Fresnel) contributions are physics-based
   - NB: light information is carried by photons and the ray approximation in ray tracing is a design choice, trading off render precision for reduced computational expense
 
 References: 
@@ -63,8 +61,10 @@ References:
   - starting from the hit point, recursively ray-trace reflection and refraction rays that contribute to the hit point color value:
     - using the Fresnel equations, compute reflected and refracted rays from the hit point
     - follow these two rays, recursively generating new reflection and refraction rays at each subsequent scene element intersection, until a ray intersects a light source (or the computation times out)
-  - integrate over contributions to the initial nearest hit point to set the associated pixel's color value
-    - ambient + diffuse surface scattering (considering occlusion/shadows) + indirect light (prior reflection and refraction contributions, computed recursively)
+  - integrate over contributions to the initial nearest hit point to set the associated pixel's color value:
+
+    ```ambient + diffuse surface scattering (considering occlusion/shadows) + indirect light (prior reflection and refraction contributions, computed recursively)```
+
 ```
                     Ambient Light
                     |||||||||||||||||||||||||||||||||||||||
@@ -89,11 +89,11 @@ References:
   - parametrize ray as a line between a virtual camera/eye (at an observer position, in front of the display) and the scene pixel: 
     - Point-on-ray-trajectory = ray.origin + t * ray.direction
   - compute the nearest intersection between the line/ray and all scene elements (i.e., find the nearest 'hit')
+  - assign the pixel color value based on illumination of the intersection/nearest 'hit'
 
 #### Display plane
 - The number and arrangement of display plane pixels is:
   - n_vertical_pixels * n_horizontal_pixels
-- Pixel values represent color as [red, green, blue]. 
 
 #### Scene elements
 - spheres
@@ -102,7 +102,7 @@ References:
 
 #### Input
 - Scene elements represented by classes
-- Generate class instances, specifying attributes: e.g., position, surface normal, color, Fresnel coefficients (reflectivity, index of refraction)
+- Create the scene by generating class instances, specifying attributes: e.g., position, surface normal, color, Fresnel coefficients (reflectivity, index of refraction)
 
 #### Output: image file
 - With matplotlib, a .png file is generated via imsave().
@@ -112,6 +112,7 @@ References:
 
 #### Dependencies
 - Python modules (all imported in main.py):
+  - math
   - numpy
   - matplotlib
   - time (optional)

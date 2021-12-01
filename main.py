@@ -58,7 +58,7 @@ class Camera():
 class Ray():
     def __init__(self, start_point, direction):
         '''
-        generate instances of Ray: defined by a starting position and direction (the direction doesn't need to be unit length)
+        generate instances of Ray: defined by a starting position and direction (direction doesn't need to be unit length)
         '''
         self.start_point = np.array(start_point)
         self.direction = np.array(direction)
@@ -86,7 +86,6 @@ class Plane():
     def __init__(self, point_on, normal, color, k_diffuse = 1, k_refl = 0.5, k_refr = 0.5, n = 1):
         '''
         generate instances of Plane: defined by a normal that's perpendicular to any on-plane vector, which can be established by any two points on the plane
-            *texture applied separately in relation to the scene location
         '''
         self.point_on = np.array(point_on)
         self.normal = np.array(normal)
@@ -105,7 +104,7 @@ class Plane():
 class Light():
     def __init__(self, center, color):
         '''
-        generate instance of Light: parameters similar to other scene objects, but a Light *emits* light, so its color is active, not reactive (eg, its the end point in recursive reflection/refraction)
+        generate instance of Light: *emits* light, so color is active, not reactive
         '''
         self.center = np.array(center)
         self.color = np.array(color)
@@ -235,7 +234,7 @@ def find_nearest(ray, scene, hit_element = 0):
 def shift_ray_start(start_point, normal, delta = 0):
     '''
     ray origin shifted slightly away from surface: the 'delta' fudge factor compensates for computational inaccuracy that may inadvertently locate the hit_point slightly off to the wrong* side of the hit_object surface; this matters for subsequent computation of next intersection for rays starting at hit_point
-    * wrong is determined relative to the surface normal
+    * 'wrong' per surface normal direction
     '''
     if not delta:
         delta = .0001
@@ -244,6 +243,9 @@ def shift_ray_start(start_point, normal, delta = 0):
 # ambient light: constant scaling factor k_ambient
 
 def ambient_contrib(hit_element):
+    '''
+    generally, every scene has some level of evenly distributed ambient illumination: pitch black dark is rare
+    '''
     return k_ambient * hit_element.color
 
 # diffusely scattered light contributions from non-occluded lights
@@ -335,7 +337,6 @@ if __name__ == "__main__":
 
     # set up array to store pixel colors: row_index, col_index, [r, g, b]
     img = np.zeros((display_height, display_width, 3))
-    colors = ''
 
     # core logic
     for j in range(display_height):
@@ -352,7 +353,6 @@ if __name__ == "__main__":
             else:
                 color_xy = background_color
             img[j, i, :] = color_xy
-            colors = colors + ' ' + str(color_xy)
     image_filename = 'raytray_image.png'
     plt.imsave(image_filename, img)
     end = time()
