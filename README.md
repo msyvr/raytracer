@@ -1,7 +1,7 @@
 ### Python ray tracing engine
 - Render a 3D scene by simulating its illumination
 - For each output image pixel, in-scene optical interactions are computed to determine the color of the pixel's incoming light ray
-  - !computationally intensive
+  - NB: computationally intensive
   - this implementation is *not* performance optimized via parallelization, bounding volumes, etc.
   - run time depends on image size and recursion depth
 
@@ -10,8 +10,8 @@
 - Output/image file: raytray.png
 - Run time:
   - scales with 'display_scale' and recursion 'depth' parameters:
-    - display size (default): 16:9 * display_scale
-    - run time scales with number of pixels: display_scale**2 
+    - display size (default): [16:9] scaled by display_scale
+      - run time scales with number of pixels: display_scale**2
   - WARNING: ray tracing is computationally expensive and, in its current state, this code is not suitable for real-time frame generation
     - example images generated with recursion depth = 0 (no Fresnel components) and display_scale = 50 on a 2015 MacBookPro running on Mojave 10.14.6 with a 2.9 GHz Intel Core i5 processor:
       ```
@@ -22,7 +22,7 @@
 
 ### Python ray tracer: example image series
 
-This sequence of images shows the evolution of a ray traced image with added optical contributions (ambient, diffuse surface scattering, shadows/occlusion, recursively traced reflection/refraction).
+This sequence of images demonstrates the evolution of a ray traced image with incremental additions of different optical contributions: ambient, diffuse surface scattering, shadows/occlusion, recursively traced reflection/refraction.
 
 <img src="images/example_ambient.png" alt="spheres with ambient light" width="480"> <img src="images/example_diffuse.png" alt="spheres with diffusely scattered localized lights + ambient light" width="480"> <img src="images/example_shadowsdiffuse.png" alt="spheres with diffusely scattered localized lights/shadows + ambient light" width="480">
 
